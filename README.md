@@ -17,6 +17,8 @@
 
 #### 구현 결과
 
+![과제1](https://github.com/user-attachments/assets/583e4e9c-0d3e-46a7-a3fa-79a93373e06a)
+
 - 하단 탭 내비게이션이 추가되었으며, 각 탭마다 고유한 화면(HomeScreen, CalendarScreen, LibraryScreen, MyPageScreen)을 구현했습니다.
 - 각 탭은 React Navigation을 사용하여 연결하였습니다.
 
@@ -31,6 +33,8 @@
 3. 특정 날짜를 선택하면 해당 날짜에 **선택 표시**(원)를 표시하며, 마지막으로 선택된 날짜만 유지됩니다.
 
 #### 구현 결과
+
+![과제2](https://github.com/user-attachments/assets/c3f1588c-4492-435e-9bb6-86261c7f2a32)
 
 - **현재 월 출력**: 현재 월의 날짜와 오늘 날짜를 강조 표시했습니다.
 - **이전/다음 달로 이동**: 화살표 버튼 클릭으로 이전/다음 달을 탐색할 수 있습니다.
@@ -48,6 +52,8 @@
 2. 좌우 스와이프 동작으로 이전/다음 달 또는 주로 이동합니다.
 
 #### 구현 결과
+
+![과제3](https://github.com/user-attachments/assets/6a24db7f-9027-4ad6-9acd-d757f260ef14)
 
 - 스와이프 제스처를 통해 자연스럽게 캘린더 형태가 월간/주간으로 전환됩니다.
 - 좌우 스와이프를 통해 이전/다음 달(또는 주)로 이동합니다.
