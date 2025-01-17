@@ -12,20 +12,21 @@ const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const CalendarScreen = () => {
   const today = new Date();
-  const [currentDate, setCurrentDate] = useState(today);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [isMonthlyView, setIsMonthlyView] = useState(true); // 월/주 상태 관리
+  const [currentDate, setCurrentDate] = useState(today); // 현재 표시 중인 달력의 기준 날짜
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // 선택된 날짜
+  const [isMonthlyView, setIsMonthlyView] = useState(true); // 월간/주간 보기 상태 관리
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
+  // 제스처 종료 시 처리 (스와이프 방향에 따라 동작 수행)
   const handleGestureEnd = ({nativeEvent}: any) => {
     const {translationX, translationY} = nativeEvent;
 
     if (Math.abs(translationX) > Math.abs(translationY)) {
-      // 좌우 스와이프
+      // 좌우 스와이프 처리
       if (translationX > 50) {
-        // 스와이프 오른쪽 → 이전 달/주
+        // 이전 달 또는 이전 주로 이동
         if (isMonthlyView) {
           setCurrentDate(
             new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1),
@@ -36,7 +37,7 @@ const CalendarScreen = () => {
           setCurrentDate(prevWeek);
         }
       } else if (translationX < -50) {
-        // 스와이프 왼쪽 → 다음 달/주
+        // 다음 달 또는 다음 주로 이동
         if (isMonthlyView) {
           setCurrentDate(
             new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
@@ -48,13 +49,11 @@ const CalendarScreen = () => {
         }
       }
     } else {
-      // 상하 스와이프
+      // 상하 스와이프 처리
       if (translationY < -50) {
-        // 스와이프 위 → 주 캘린더
-        setIsMonthlyView(false);
+        setIsMonthlyView(false); // 주간 보기로 전환
       } else if (translationY > 50) {
-        // 스와이프 아래 → 월 캘린더
-        setIsMonthlyView(true);
+        setIsMonthlyView(true); // 월간 보기로 전환
       }
     }
 
@@ -63,10 +62,12 @@ const CalendarScreen = () => {
     translateY.value = withTiming(0);
   };
 
+  // 애니메이션 스타일
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateX: translateX.value}, {translateY: translateY.value}],
   }));
 
+  // 월간 보기 날짜 계산
   const getDaysInMonth = (
     date: Date,
   ): {day: number; isCurrentMonth: boolean}[] => {
@@ -77,22 +78,26 @@ const CalendarScreen = () => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const prevMonthDays = new Date(year, month, 0).getDate();
 
+    // 이전 달의 마지막 날짜
     const previousDays = Array.from({length: firstDay}, (_, i) => ({
       day: prevMonthDays - firstDay + i + 1,
       isCurrentMonth: false,
     }));
 
+    // 현재 달의 날짜
     const currentMonthDays = Array.from({length: daysInMonth}, (_, i) => ({
       day: i + 1,
       isCurrentMonth: true,
     }));
 
+    // 다음 달의 시작 날짜
     const totalDays = previousDays.length + currentMonthDays.length;
     const nextDays = Array.from({length: 42 - totalDays}, (_, i) => ({
       day: i + 1,
       isCurrentMonth: false,
     }));
 
+    // 총 날짜 배열 반환 (6줄 기준으로 배열 크기 조정)
     const allDays = [...previousDays, ...currentMonthDays, ...nextDays];
     const lastRowStartIndex = allDays.length - 7;
     const lastRow = allDays.slice(lastRowStartIndex);
@@ -101,6 +106,7 @@ const CalendarScreen = () => {
     return isLastRowNextMonth ? allDays.slice(0, lastRowStartIndex) : allDays;
   };
 
+  // 주간 보기 날짜 계산
   const getWeekDates = (date: Date) => {
     const startOfWeek = new Date(date);
     startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
@@ -120,7 +126,7 @@ const CalendarScreen = () => {
   return (
     <PanGestureHandler onEnded={handleGestureEnd}>
       <Animated.View style={[styles.container, animatedStyle]}>
-        {/* Header */}
+        {/* 캘린더 상단 헤더 */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() =>
@@ -144,7 +150,7 @@ const CalendarScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Days of Week */}
+        {/* 요일 표시 */}
         <View style={styles.daysOfWeek}>
           {daysOfWeek.map((day, index) => (
             <Text
@@ -159,7 +165,7 @@ const CalendarScreen = () => {
           ))}
         </View>
 
-        {/* Calendar Days */}
+        {/* 캘린더 날짜 렌더링 */}
         <FlatList
           data={days}
           keyExtractor={(item, index) => index.toString()}
